@@ -87,7 +87,16 @@ if add_selectbox == "Parkinsons Disease":
             D2 = float(D2_input)
             PPE = float(PPE_input)
 
-            parks_prediction
+            parks_prediction = parkinsons_model.predict(
+                [[fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]]
+            )
+
+            if parks_prediction[0] == 1:
+                parks_diagnosis = "The person has Parkinson's disease."
+            else:
+                parks_diagnosis = "The person does not have Parkinson's disease."
+    st.success(parks_diagnosis)
+
 
 
 
