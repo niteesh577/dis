@@ -1,6 +1,6 @@
 
 import pickle
-import streamlit as st
+
 
 # new
 import streamlit as st
@@ -111,6 +111,7 @@ def about():
 
 # Disease Detection Page
 def disease_detection():
+    import streamlit as st
     st.header("Disease Detection Page")
     add_selectbox = st.sidebar.selectbox(
         "Which Disease you want to check with",
@@ -122,90 +123,79 @@ def disease_detection():
     parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
     if add_selectbox == "Parkinsons Disease":
-        st.title('Parkinsons Disease Prediction')
+        import streamlit as st
+        import numpy as np
+        import pandas as pd
+        from sklearn.ensemble import RandomForestClassifier
+        import sounddevice as sd
+        import librosa
 
-        fo_input = st.text_input('MDVP:Fo(Hz)')
-        fhi_input = st.text_input('MDVP:Fhi(Hz)')
-        flo_input = st.text_input('MDVP:Flo(Hz)')
-        jitter_input = st.text_input('MDVP:Jitter(%)')
-        Jitter_input = st.text_input('MDVP:Jitter(Abs)')
-        RAP_input = st.text_input('MDVP:RAP')
-        PPQ_input = st.text_input('PPQ')
-        DDP_input = st.text_input('Jitter:DDP')
-        Shimmer_input = st.text_input('MDVP:Shimmer')
-        shimmer_input = st.text_input('MDVP:Shimmer(dB)')
-        APQ3_input = st.text_input('Shimmer APQ3')
-        APQ5_input = st.text_input('Shimmer APQ5')
-        APQ_input = st.text_input('MDVP:APQ')
-        DDA_input = st.text_input('Shimmer DDA')
-        NHR_input = st.text_input('NHR')
-        HNR_input = st.text_input('HNR')
-        RPDE_input = st.text_input('RPDE')
-        DFA_input = st.text_input('DFA')
-        spread1_input = st.text_input('spread1')
-        spread2_input = st.text_input('spread2')
-        D2_input = st.text_input('D2')
-        PPE_input = st.text_input('PPE')
+        # Load the trained model
+        parkinsons_model = RandomForestClassifier()
 
-        parks_diagnosis = ''
-        if st.button("Parkinsons Test Result"):
-            if (
-                    fo_input
-                    and fhi_input
-                    and flo_input
-                    and jitter_input
-                    and Jitter_input
-                    and RAP_input
-                    and PPQ_input
-                    and DDP_input
-                    and Shimmer_input
-                    and shimmer_input
-                    and APQ3_input
-                    and APQ5_input
-                    and APQ_input
-                    and DDA_input
-                    and NHR_input
-                    and HNR_input
-                    and RPDE_input
-                    and DFA_input
-                    and spread1_input
-                    and spread2_input
-                    and D2_input
-                    and PPE_input
-            ):
-                fo = float(fo_input)
-                fhi = float(fhi_input)
-                flo = float(flo_input)
-                jitter = float(jitter_input)
-                Jitter = float(Jitter_input)
-                RAP = float(RAP_input)
-                PPQ = float(PPQ_input)
-                DDP = float(DDP_input)
-                Shimmer = float(Shimmer_input)
-                shimmer = float(shimmer_input)
-                APQ3 = float(APQ3_input)
-                APQ5 = float(APQ5_input)
-                APQ = float(APQ_input)
-                DDA = float(DDA_input)
-                NHR = float(NHR_input)
-                HNR = float(HNR_input)
-                RPDE = float(RPDE_input)
-                DFA = float(DFA_input)
-                spread1 = float(spread1_input)
-                spread2 = float(spread2_input)
-                D2 = float(D2_input)
-                PPE = float(PPE_input)
+        # Function to record audio from microphone
+        def record_audio(duration):
+            fs = 44100  # Sample rate
+            sd.default.samplerate = fs
+            sd.default.channels = 1  # Mono audio
+            audio_data = sd.rec(int(duration * fs))
+            sd.wait()  # Wait until recording is finished
+            return audio_data.flatten()
 
-                parks_prediction = parkinsons_model.predict(
-                    [[fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
-                      RPDE, DFA, spread1, spread2, D2, PPE]]
-                )
+        # Function to extract features from speech input
+        def extract_features(audio_data):
+            # Reshape audio data to 2D array with shape (n_samples, n_channels)
+            audio_data = audio_data.reshape(-1, 1)
 
-                if parks_prediction[0] == 1:
-                    parks_diagnosis = "The person has Parkinson's disease."
-                else:
-                    parks_diagnosis = "The person does not have Parkinson's disease."
-        st.success(parks_diagnosis)
+            # Compute spectrogram
+            spectrogram = np.abs(librosa.stft(audio_data).T)
+
+            # Extract features
+            fo = librosa.feature.zero_crossing_rate(audio_data).mean()
+            fhi = librosa.feature.spectral_centroid(S=spectrogram).mean()
+            flo = librosa.feature.spectral_contrast(S=spectrogram).mean()
+            jitter = librosa.feature.rms(audio_data).mean()
+            Jitter = librosa.feature.tonnetz(audio_data).mean()
+            RAP = librosa.feature.mfcc(audio_data, n_mfcc=20).mean()
+            PPQ = librosa.feature.chroma_stft(audio_data).mean()
+            DDP = librosa.feature.rms(audio_data).mean()
+            Shimmer = librosa.feature.spectral_bandwidth(audio_data).mean()
+            shimmer = librosa.feature.spectral_rolloff(audio_data).mean()
+            APQ3 = librosa.feature.spectral_flatness(audio_data).mean()
+            APQ5 = librosa.feature.melspectrogram(audio_data).mean()
+            APQ = librosa.feature.tempogram(audio_data).mean()
+            DDA = librosa.feature.poly_features(audio_data).mean()
+            NHR = librosa.feature.tonnetz(audio_data).mean()
+            HNR = librosa.feature.zero_crossing_rate(audio_data).mean()
+            RPDE = librosa.feature.spectral_contrast(audio_data).mean()
+            DFA = librosa.feature.tonnetz(audio_data).mean()
+            spread1 = librosa.feature.spectral_bandwidth(audio_data).mean()
+            spread2 = librosa.feature.spectral_contrast(audio_data).mean()
+            D2 = librosa.feature.chroma_cqt(audio_data).mean()
+            PPE = librosa.feature.spectral_contrast(audio_data).mean()
+
+            features = [fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
+                        RPDE, DFA, spread1, spread2, D2, PPE]
+            return features
+
+        # Streamlit app
+        st.title("Parkinson's Disease Prediction")
+
+        # Record and predict
+        duration = st.slider("Recording Duration (seconds)", min_value=1, max_value=10, value=3)
+        if st.button("Start Recording"):
+            st.write("Recording...")
+            audio_data = record_audio(duration)
+            st.write("Recording finished!")
+            features = extract_features(audio_data)
+            # Make prediction using the trained model
+            parks_prediction = parkinsons_model.predict([features])
+
+            if parks_prediction[0] == 1:
+                parks_diagnosis = "The person has Parkinson's disease."
+            else:
+                parks_diagnosis = "The person does not have Parkinson's disease."
+            st.success(parks_diagnosis)
 
     if add_selectbox == "Heart Disease":
         st.title('Heart Disease Prediction')
