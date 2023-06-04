@@ -171,7 +171,7 @@ def disease_detection():
             DFA = librosa.feature.tonnetz(y=audio_data, sr=44100).mean()
             spread1 = librosa.feature.spectral_bandwidth(y=audio_data).mean()
             spread2 = librosa.feature.spectral_contrast(y=audio_data).mean()
-            D2 = librosa.feature.chroma_cqt(y=audio_data, sr=44100).mean()
+            D2 = librosa.feature.chroma_cqt(y=audio_data, sr=44100, n_chroma=12, n_octaves=4).mean()
             PPE = librosa.feature.spectral_contrast(y=audio_data).mean()
 
             features = [fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
