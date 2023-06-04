@@ -124,87 +124,85 @@ def disease_detection():
 
     if add_selectbox == "Parkinsons Disease":
 
-     import streamlit as st
-     import numpy as np
-     import pandas as pd
-     from sklearn.preprocessing import StandardScaler
-     from sklearn.svm import SVC
-     import sounddevice as sd
-     import librosa
+        import streamlit as st
+        import numpy as np
+        import pandas as pd
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.svm import SVC
+        import sounddevice as sd
+        import librosa
+        from sklearn import svm
 
-    # Load the trained model
-    parkinsons_model = SVC()
+        # Load the trained model
+        parkinsons_model = svm.SVC(kernel='linear')
 
-    def record_audio(duration):
-        fs = 44100  # Sample rate
-        sd.default.samplerate = fs
-        sd.default.channels = 1  # Mono audio
-        audio_data = sd.rec(int(duration * fs))
-        sd.wait()  # Wait until recording is finished
-        return audio_data.flatten()
+        def record_audio(duration):
+            fs = 44100  # Sample rate
+            sd.default.samplerate = fs
+            sd.default.channels = 1  # Mono audio
+            audio_data = sd.rec(int(duration * fs))
+            sd.wait()  # Wait until recording is finished
+            return audio_data.flatten()
 
-    def extract_features(audio_data):
-        # Reshape audio data to 2D array with shape (n_samples, n_channels)
-        audio_data = audio_data.reshape(-1, 1)
+        def extract_features(audio_data):
+            # Reshape audio data to 2D array with shape (n_samples, n_channels)
+            audio_data = audio_data.reshape(-1, 1)
 
-        # Compute spectrogram
-        spectrogram = np.abs(librosa.stft(audio_data).T)
-        # Extract features
-        fo = librosa.feature.zero_crossing_rate(audio_data).mean()
-        fhi = librosa.feature.spectral_centroid(S=spectrogram).mean()
-        flo = librosa.feature.spectral_contrast(S=spectrogram).mean()
-        jitter = librosa.feature.rms(y=audio_data).mean()
-        Jitter = librosa.feature.tonnetz(audio_data).mean()
-        RAP = librosa.feature.mfcc(audio_data, n_mfcc=20).mean()
-        PPQ = librosa.feature.chroma_stft(audio_data).mean()
-        DDP = librosa.feature.rms(audio_data).mean()
-        Shimmer = librosa.feature.spectral_bandwidth(audio_data).mean()
-        shimmer = librosa.feature.spectral_rolloff(audio_data).mean()
-        APQ3 = librosa.feature.spectral_flatness(audio_data).mean()
-        APQ5 = librosa.feature.melspectrogram(audio_data).mean()
-        APQ = librosa.feature.tempogram(audio_data).mean()
-        DDA = librosa.feature.poly_features(audio_data).mean()
-        NHR = librosa.feature.tonnetz(audio_data).mean()
-        HNR = librosa.feature.zero_crossing_rate(audio_data).mean()
-        RPDE = librosa.feature.spectral_contrast(audio_data).mean()
-        DFA = librosa.feature.tonnetz(audio_data).mean()
-        spread1 = librosa.feature.spectral_bandwidth(audio_data).mean()
-        spread2 = librosa.feature.spectral_contrast(audio_data).mean()
-        D2 = librosa.feature.chroma_cqt(audio_data).mean()
-        PPE = librosa.feature.spectral_contrast(audio_data).mean()
+            # Compute spectrogram
+            spectrogram = np.abs(librosa.stft(audio_data).T)
+            # Extract features
+            fo = librosa.feature.zero_crossing_rate(audio_data).mean()
+            fhi = librosa.feature.spectral_centroid(S=spectrogram).mean()
+            flo = librosa.feature.spectral_contrast(S=spectrogram).mean()
+            jitter = librosa.feature.rms(y=audio_data).mean()
+            Jitter = librosa.feature.tonnetz(y=audio_data, sr=44100).mean()
+            RAP = librosa.feature.mfcc(y=audio_data, sr=44100, n_mfcc=20).mean()
+            PPQ = librosa.feature.chroma_stft(y=audio_data, sr=44100).mean()
+            DDP = librosa.feature.rms(y=audio_data).mean()
+            Shimmer = librosa.feature.spectral_bandwidth(y=audio_data).mean()
+            shimmer = librosa.feature.spectral_rolloff(y=audio_data).mean()
+            APQ3 = librosa.feature.spectral_flatness(y=audio_data).mean()
+            APQ5 = librosa.feature.melspectrogram(y=audio_data, sr=44100).mean()
+            APQ = librosa.feature.tempogram(y=audio_data, sr=44100).mean()
+            DDA = librosa.feature.poly_features(y=audio_data).mean()
+            NHR = librosa.feature.tonnetz(y=audio_data, sr=44100).mean()
+            HNR = librosa.feature.zero_crossing_rate(y=audio_data).mean()
+            RPDE = librosa.feature.spectral_contrast(y=audio_data).mean()
+            DFA = librosa.feature.tonnetz(y=audio_data, sr=44100).mean()
+            spread1 = librosa.feature.spectral_bandwidth(y=audio_data).mean()
+            spread2 = librosa.feature.spectral_contrast(y=audio_data).mean()
+            D2 = librosa.feature.chroma_cqt(y=audio_data, sr=44100).mean()
+            PPE = librosa.feature.spectral_contrast(y=audio_data).mean()
 
-        features = [fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
-                    RPDE, DFA, spread1, spread2, D2, PPE]
-        return features
+            features = [fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
+                        RPDE, DFA, spread1, spread2, D2, PPE]
+            return features
 
-    # Streamlit app
-    st.title("Parkinson's Disease Prediction")
+        # Streamlit app
+        st.title("Parkinson's Disease Prediction")
 
-    # Record and predict
-    duration = st.slider("Recording Duration (seconds)", min_value=1, max_value=10, value=3)
-    if st.button("Start Recording"):
-        st.write("Recording...")
-        audio_data = record_audio(duration)
-        st.write("Recording finished!")
+        # Record and predict
+        duration = st.slider("Recording Duration (seconds)", min_value=1, max_value=10, value=3)
+        if st.button("Start Recording"):
+            st.write("Recording...")
+            audio_data = record_audio(duration)
+            st.write("Recording finished!")
 
+            # Extract features from audio_data
+            features = extract_features(audio_data)
 
-        # Extract features from audio_data
-        features = extract_features(audio_data)
+            # Scale the features using StandardScaler
+            scaler = StandardScaler()
+            scaled_features = scaler.transform(features.reshape(1, -1))
 
-        # Scale the features using StandardScaler
-        scaler = StandardScaler()
-        scaled_features = scaler.fit_transform(features.reshape(1, -1))
+            # Make prediction using the trained model
+            parks_prediction = parkinsons_model.predict([scaled_features])
 
-        # Make prediction using the trained model
-
-
-        parks_prediction = parkinsons_model.predict([scaled_features])
-
-        if parks_prediction[0] == 1:
-            parks_diagnosis = "The person has Parkinson's disease."
-        else:
-            parks_diagnosis = "The person does not have Parkinson's disease."
-        st.success(parks_diagnosis)
+            if parks_prediction[0] == 1:
+                parks_diagnosis = "The person has Parkinson's disease."
+            else:
+                parks_diagnosis = "The person does not have Parkinson's disease."
+            st.success(parks_diagnosis)
 
     if add_selectbox == "Heart Disease":
         st.title('Heart Disease Prediction')
