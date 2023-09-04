@@ -1,5 +1,6 @@
 
-import pickle
+
+
 
 
 # new
@@ -8,26 +9,34 @@ import streamlit as st
 # Home Page
 def home():
     st.title("Home Page")
-    st.markdown("## Parkinsons parameter")
-    st.markdown("fo_input: It represents the fundamental frequency, which is the lowest frequency of a periodic waveform. In the context of Parkinson's disease, changes in fo_input may indicate vocal abnormalities such as voice tremor or reduced vocal fold control.")
-    st.markdown("fhi_input: It stands for the highest frequency of the voice signal. Changes in fhi_input can reflect alterations in the upper range of vocal frequencies and may indicate voice disorders or limitations in vocal fold movement.")
-    st.markdown("flo_input: It refers to the lowest frequency of the voice signal. Variations in flo_input can indicate changes in the lower range of vocal frequencies and may be associated with vocal fold pathology or stiffness.")
-    st.markdown("jitter_input and Jitter_input: Jitter is a measure of the cycle-to-cycle variability in the fundamental frequency of the voice signal. It quantifies the irregularity in vocal fold vibrations. Higher values of jitter_input and Jitter_input may suggest vocal fold pathology or instability.")
-    st.markdown("RAP_input: RAP stands for Relative Average Perturbation and is another measure of voice perturbation. It assesses the cycle-to-cycle variations in the duration of consecutive periods. Increased RAP_input values may indicate irregular vocal fold vibrations.")
-    st.markdown("PPQ_input: It stands for Pitch Period Perturbation Quotient and is a measure of the short-term variations in the fundamental frequency of the voice signal. Higher PPQ_input values may indicate voice instability and perturbations.")
-    st.markdown("DDP_input: DDP represents the Difference in Duration of Consecutive Periods and is a measure of voice perturbation. It quantifies the changes in the duration between consecutive periods. Higher DDP_input values may indicate irregular vocal fold vibrations.")
-    st.markdown("Shimmer_input and shimmer_input: Shimmer measures the cycle-to-cycle variation in the amplitude of the voice signal. It quantifies the irregularities in vocal fold intensity. Higher values of shimmer_input and shimmer_input may indicate voice instability and perturbations.")
-    st.markdown("APQ3_input and APQ5_input: APQ stands for Amplitude Perturbation Quotient and measures the short-term variations in the amplitude of the voice signal. APQ3 considers the perturbations within 3 periods, while APQ5 considers the perturbations within 5 periods. Higher values of APQ3_input and APQ5_input may indicate voice instability and perturbations.")
-    st.markdown("APQ_input: It is another measure of amplitude perturbation and quantifies the variations in the amplitude of the voice signal over multiple periods. Higher values of APQ_input may indicate voice instability.")
-    st.markdown("DDA_input: DDA stands for Difference in Amplitude of Consecutive periods and is a measure of voice perturbation. It quantifies the changes in amplitude between consecutive periods. Higher DDA_input values may indicate irregular vocal fold vibrations.")
-    st.markdown("NHR_input: NHR represents the ratio of the noise component to the harmonic component in the voice signal. Higher NHR_input values may indicate increased levels of noise in the voice, which can be associated with voice disorders.")
-    st.markdown("HNR_input: HNR stands for Harmonic-to-Noise Ratio and quantifies the ratio of harmonic components to noise components in the voice signal. Lower HNR_input values may suggest increased levels of noise in the voice.")
-    st.markdown("RPDE_input: RPDE stands for Recurrence Period Density Entropy and is a measure of the complexity and regularity of the voice signal. It quantifies the predictability of the signal. Changes in RPDE_input may indicate alterations in the voice dynamics.")
-    st.markdown("DFA_input: DFA represents Detrended Fluctuation Analysis and measures the presence of long-term correlations in the voice signal. It assesses the self-similarity or fractal properties of the signal. Changes in DFA_input may reflect alterations in the complexity and dynamics of the voice.")
-    st.markdown("spread1_input and spread2_input: These parameters are related to nonlinear dynamic features of the voice signal. They quantify the spreading of the attractor in phase space. Changes in spread1_input and spread2_input may reflect alterations in the nonlinear characteristics of the voice.")
-    st.markdown("D2_input: It represents the correlation dimension, which is a measure of the complexity and dimensionality of the voice signal in phase space. Changes in D2_input may indicate alterations in the voice dynamics and complexity.")
-    st.markdown("PPE_input: PPE stands for Pitch Period Entropy and measures the unpredictability or entropy of the pitch periods in the voice signal. Higher PPE_input values may indicate increased variability or instability in pitch.")
-    st.markdown("These parameters are commonly used in the analysis of vocal biomarkers for Parkinsons disease and provide valuable insights into voice characteristics and potential indicators of the disease.")
+
+    st.markdown("""
+ Vocal biomarkers are acoustic features that can be extracted from speech signals. These features can be used to identify and diagnose a variety of medical conditions, including Parkinson's disease, Alzheimer's disease, and depression.
+
+ Vocal biomarkers are extracted using a variety of methods, including:
+
+ * Time-domain analysis: This involves analyzing the time-varying characteristics of the speech signal, such as the fundamental frequency (F0), the amplitude, and the duration of the signal.
+ * Frequency-domain analysis: This involves analyzing the frequency components of the speech signal, such as the spectral centroid, the spectral slope, and the spectral entropy.
+ * Time-frequency analysis: This involves analyzing the time-frequency characteristics of the speech signal, such as the wavelet transform and the short-time Fourier transform.
+
+ The choice of method depends on the specific vocal biomarker that is being extracted and the medical condition that is being diagnosed.
+
+ Vocal biomarkers have been shown to be effective in detecting and diagnosing a variety of medical conditions. For example, a study published in the journal Neurology found that vocal biomarkers could be used to diagnose Parkinson's disease with 90% accuracy.
+
+ Vocal biomarkers are a promising new tool for early diagnosis and treatment of medical conditions. As research in this area continues, it is likely that vocal biomarkers will become even more accurate and reliable.
+
+ Here are some of the benefits of using vocal biomarkers:
+
+ * They are non-invasive and can be easily collected.
+ * They can be used to monitor the progression of a disease over time.
+ * They can be used to assess the effectiveness of treatment.
+
+ However, there are also some challenges associated with using vocal biomarkers:
+
+ * The accuracy of vocal biomarkers can vary depending on the specific condition being diagnosed.
+ * Vocal biomarkers can be affected by a variety of factors, such as the speaker's age, gender, and emotional state.
+ """)
+
 
 
 
@@ -118,19 +127,20 @@ def disease_detection():
         ("Parkinsons Disease", "Heart Disease", "Diabetes"),
 
     )
+    import pickle
     diabetes_model = pickle.load(open("diabetes_model.sav", 'rb'))
     heartdis_model = pickle.load(open('heartdis_model.sav', 'rb'))
     parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
     if add_selectbox == "Parkinsons Disease":
 
+        import pickle
         import streamlit as st
         import numpy as np
-        import pandas as pd
-        from sklearn.preprocessing import StandardScaler
-        from sklearn.svm import SVC
         import sounddevice as sd
         import librosa
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.svm import SVC
         from sklearn import svm
 
         # Load the trained model
@@ -150,7 +160,9 @@ def disease_detection():
 
             # Compute spectrogram
             spectrogram = np.abs(librosa.stft(audio_data).T)
-            # Extract features
+
+            # Adjust the number of octaves to match your data
+            num_octaves = 3
             fo = librosa.feature.zero_crossing_rate(audio_data).mean()
             fhi = librosa.feature.spectral_centroid(S=spectrogram).mean()
             flo = librosa.feature.spectral_contrast(S=spectrogram).mean()
@@ -171,39 +183,64 @@ def disease_detection():
             DFA = librosa.feature.tonnetz(y=audio_data, sr=44100).mean()
             spread1 = librosa.feature.spectral_bandwidth(y=audio_data).mean()
             spread2 = librosa.feature.spectral_contrast(y=audio_data).mean()
-            D2 = librosa.feature.chroma_cqt(y=audio_data, sr=44100, n_chroma=12, n_octaves=4).mean()
+            D2 = librosa.feature.chroma_cqt(y=audio_data, sr=44100, n_chroma=12, n_octaves=num_octaves).mean()
             PPE = librosa.feature.spectral_contrast(y=audio_data).mean()
 
             features = [fo, fhi, flo, jitter, Jitter, RAP, PPQ, DDP, Shimmer, shimmer, APQ3, APQ5, APQ, DDA, NHR, HNR,
                         RPDE, DFA, spread1, spread2, D2, PPE]
+
             return features
 
         # Streamlit app
         st.title("Parkinson's Disease Prediction")
 
         # Record and predict
-        duration = st.slider("Recording Duration (seconds)", min_value=1, max_value=10, value=3)
+        duration = st.slider("Recording Duration (seconds)", min_value=1, max_value=40, value=3)
         if st.button("Start Recording"):
             st.write("Recording...")
             audio_data = record_audio(duration)
             st.write("Recording finished!")
 
-            # Extract features from audio_data
-            features = extract_features(audio_data)
+            # Define segment duration and overlap
+            segment_duration = 5  # Length of each segment in seconds
+            overlap_duration = 2  # Length of overlap between segments in seconds
 
-            # Scale the features using StandardScaler
-            scaler = StandardScaler()
-            scaled_features = scaler.transform(features.reshape(1, -1))
+            # Initialize a list to store predictions for each segment
+            segment_predictions = []
 
-            # Make prediction using the trained model
-            parks_prediction = parkinsons_model.predict([scaled_features])
+            # Process audio segments sequentially
+            start = 0
+            end = start + segment_duration
 
-            if parks_prediction[0] == 1:
+            while end <= len(audio_data):
+                segment = audio_data[start:end]
+
+                # Extract features from the segment
+                features = extract_features(segment)
+
+                # Scale the features using StandardScaler
+                scaler = StandardScaler()
+                scaled_features = scaler.transform(np.array(features).reshape(1, -1))
+
+                # Make prediction using the trained model
+                segment_prediction = parkinsons_model.predict(scaled_features)
+
+                # Store the prediction for this segment
+                segment_predictions.append(segment_prediction[0])
+
+                # Move to the next segment with overlap
+                start += segment_duration - overlap_duration
+                end = start + segment_duration
+
+            # Determine the final prediction based on the segments
+            final_prediction = 1 if sum(segment_predictions) > len(segment_predictions) / 2 else 0
+
+            if final_prediction == 1:
                 parks_diagnosis = "The person has Parkinson's disease."
             else:
                 parks_diagnosis = "The person does not have Parkinson's disease."
-            st.success(parks_diagnosis)
 
+                st.success(parks_diagnosis)
     if add_selectbox == "Heart Disease":
         st.title('Heart Disease Prediction')
 
@@ -354,7 +391,6 @@ elif nav_selection == "Contact":
     contact()
 elif nav_selection == "Blogs":
     blogs()
-
 
 
 
